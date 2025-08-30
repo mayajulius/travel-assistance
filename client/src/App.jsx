@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {
     Box, Chip, CircularProgress, Container, CssBaseline, Divider,
     IconButton, InputAdornment, Paper, Stack, TextField, ThemeProvider,
@@ -13,8 +13,8 @@ import ChatMessage from "./ChatMessage.jsx";
 const theme = createTheme({
     palette: {
         mode: "light",
-        primary: { main: "#1976d2" }, // Sky blue
-        secondary: { main: "#f57c00" }, // Orange accent
+        primary: {main: "#1976d2"}, // Sky blue
+        secondary: {main: "#f57c00"}, // Orange accent
         background: {
             default: "#f2f7fb", // Soft cloudy background
             paper: "#ffffff"
@@ -35,17 +35,17 @@ const theme = createTheme({
 
 const QUICK_PROMPTS = [
     {
-        icon: <BackpackIcon fontSize="small" />,
+        icon: <BackpackIcon fontSize="small"/>,
         label: "Pack for Patagonia in March (10 days, hiking)",
         text: "What should I pack for hiking in Patagonia in March for 10 days?"
     },
     {
-        icon: <LocationOnIcon fontSize="small" />,
+        icon: <LocationOnIcon fontSize="small"/>,
         label: "4 days in Kyoto in May — what to see",
         text: "Kyoto in May for 4 days — what should I see?"
     },
     {
-        icon: <TravelExploreIcon fontSize="small" />,
+        icon: <TravelExploreIcon fontSize="small"/>,
         label: "Warm beach ideas in November (from Tel Aviv, medium budget)",
         text: "Looking for warm beach destinations in November from Tel Aviv, medium budget."
     }
@@ -55,7 +55,10 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3001/chat";
 
 export default function App() {
     const [messages, setMessages] = useState([
-        { role: "assistant", text: "Hi! I can suggest destinations, packing lists, and local attractions. What are you planning?" }
+        {
+            role: "assistant",
+            text: "Hey there! 😊 I can help you choose great destinations, figure out what to pack, and find fun things to do. What kind of trip are you planning?"
+        }
     ]);
     const [input, setInput] = useState("");
     const [busy, setBusy] = useState(false);
@@ -63,7 +66,7 @@ export default function App() {
 
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+            scrollRef.current.scrollTo({top: scrollRef.current.scrollHeight, behavior: "smooth"});
         }
     }, [messages]);
 
@@ -76,15 +79,15 @@ export default function App() {
         const content = (text ?? input).trim();
         if (!content || busy) return;
 
-        setMessages(prev => [...prev, { role: "user", text: content }]);
+        setMessages(prev => [...prev, {role: "user", text: content}]);
         setInput("");
         setBusy(true);
 
         try {
             const resp = await fetch(API, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: content, sessionId: "web" })
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message: content, sessionId: "web"})
             });
 
             if (!resp.ok) {
@@ -94,10 +97,10 @@ export default function App() {
 
             const data = await resp.json();
             const reply = (typeof data?.reply === "string" && data.reply.trim()) ? data.reply : "(No reply)";
-            setMessages(prev => [...prev, { role: "assistant", text: reply }]);
+            setMessages(prev => [...prev, {role: "assistant", text: reply}]);
         } catch (e) {
             console.error(e);
-            setMessages(prev => [...prev, { role: "assistant", text: `Request failed: ${String(e.message || e)}` }]);
+            setMessages(prev => [...prev, {role: "assistant", text: `Request failed: ${String(e.message || e)}`}]);
         } finally {
             setBusy(false);
         }
@@ -112,31 +115,35 @@ export default function App() {
 
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Container maxWidth="md" sx={{ py: 4 }}>
-                <Paper elevation={6} sx={{ overflow: "hidden", borderRadius: 4, background: "linear-gradient(to top, #ffffff, #e8f0fb)" }}>
+            <CssBaseline/>
+            <Container maxWidth="md" sx={{py: 4}}>
+                <Paper elevation={6} sx={{
+                    overflow: "hidden",
+                    borderRadius: 4,
+                    background: "linear-gradient(to top, #ffffff, #e8f0fb)"
+                }}>
                     <Box sx={{
                         display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 2,
                         borderBottom: "1px solid #e0e0e0"
                     }}>
-                        <TravelExploreIcon color="primary" />
-                        <Typography variant="h5" sx={{ fontWeight: 700 }}>AI Travel Assistant</Typography>
+                        <TravelExploreIcon color="primary"/>
+                        <Typography variant="h5" sx={{fontWeight: 700}}>AI Travel Assistant</Typography>
                     </Box>
-                    <Box ref={scrollRef} sx={{ height: { xs: "60vh", md: "70vh" }, overflow: "auto", px: 2, py: 2 }}>
+                    <Box ref={scrollRef} sx={{height: {xs: "60vh", md: "70vh"}, overflow: "auto", px: 2, py: 2}}>
                         <Stack spacing={2}>
                             {messages.map((m, i) => (
-                                <ChatMessage key={i} role={m.role} text={m.text} />
+                                <ChatMessage key={i} role={m.role} text={m.text}/>
                             ))}
                             {busy && (
-                                <Stack direction="row" spacing={1} alignItems="center" sx={{ color: "text.secondary" }}>
-                                    <CircularProgress size={18} />
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{color: "text.secondary"}}>
+                                    <CircularProgress size={18}/>
                                     <Typography variant="body2">Thinking…</Typography>
                                 </Stack>
                             )}
                         </Stack>
                     </Box>
-                    <Divider />
-                    <Box sx={{ px: 2, pt: 1, pb: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                    <Divider/>
+                    <Box sx={{px: 2, pt: 1, pb: 1, display: "flex", flexWrap: "wrap", gap: 1}}>
                         {QUICK_PROMPTS.map((q, idx) => (
                             <Chip
                                 key={idx}
@@ -154,10 +161,10 @@ export default function App() {
                                         backgroundColor: "#e3f2fd"
                                     }
                                 }}
-                            />                        ))}
+                            />))}
                     </Box>
-                    <Divider />
-                    <Box sx={{ p: 2, bgcolor: "rgba(255,255,255,0.03)" }}>
+                    <Divider/>
+                    <Box sx={{p: 2, bgcolor: "rgba(255,255,255,0.03)"}}>
                         <TextField
                             fullWidth
                             multiline
@@ -170,8 +177,9 @@ export default function App() {
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <IconButton color="primary" onClick={() => send()} disabled={busy || !input.trim()}>
-                                            <SendIcon />
+                                        <IconButton color="primary" onClick={() => send()}
+                                                    disabled={busy || !input.trim()}>
+                                            <SendIcon/>
                                         </IconButton>
                                     </InputAdornment>
                                 )
@@ -179,7 +187,7 @@ export default function App() {
                         />
                     </Box>
                 </Paper>
-                <Typography variant="caption" sx={{ display: "block", mt: 1.5, color: "text.secondary" }}>
+                <Typography variant="caption" sx={{display: "block", mt: 1.5, color: "text.secondary"}}>
                     Tip: Try “What should I pack for hiking in Patagonia in March for 10 days?”
                 </Typography>
             </Container>

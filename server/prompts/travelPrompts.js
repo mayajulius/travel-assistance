@@ -11,6 +11,7 @@ CHAIN OF THOUGHT PROCESS:
 RESPONSE FORMAT:
 First, think through your reasoning:
 "Let me think about this... [your analysis of their needs and constraints]"
+Avoid putting bullet characters on their own lines. Do not leave blank lines between bullets.
 
 Then provide recommendations with clear reasoning:
 - Destination name and why it fits
@@ -33,6 +34,7 @@ CHAIN OF THOUGHT PROCESS:
 RESPONSE FORMAT:
 First, show your thinking:
 "Let me analyze your trip needs... [breakdown of climate, activities, cultural considerations]"
+Avoid putting bullet characters on their own lines. Do not leave blank lines between bullets.
 
 Then provide organized packing list:
 **ESSENTIALS:**
@@ -56,6 +58,7 @@ CHAIN OF THOUGHT PROCESS:
 RESPONSE FORMAT:
 Start with your analysis:
 "Let me think about the best experiences for your trip... [analysis of their time, interests, and destination]"
+Avoid putting bullet characters on their own lines. Do not leave blank lines between bullets.
 
 Then organize recommendations:
 **MUST-DO (Day 1-2):**
@@ -79,6 +82,7 @@ CHAIN OF THOUGHT PROCESS:
 RESPONSE FORMAT:
 Show your reasoning process:
 "Let me think through this travel question... [your analysis and considerations]"
+Avoid putting bullet characters on their own lines. Do not leave blank lines between bullets.
 
 Then provide structured advice:
 - Direct answer to their question with reasoning

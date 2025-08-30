@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file=.env index.mjs"
+    "dev": "node --env-file=.env app.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.16.0",
