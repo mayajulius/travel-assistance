@@ -12,13 +12,26 @@ import ChatMessage from "./ChatMessage.jsx";
 
 const theme = createTheme({
     palette: {
-        mode: "dark",
-        primary: { main: "#8ab4ff" },
-        background: { default: "#0b1020", paper: "#111834" },
-        text: { primary: "#e9ecf1", secondary: "#93a1bf" }
+        mode: "light",
+        primary: { main: "#1976d2" }, // Sky blue
+        secondary: { main: "#f57c00" }, // Orange accent
+        background: {
+            default: "#f2f7fb", // Soft cloudy background
+            paper: "#ffffff"
+        },
+        text: {
+            primary: "#1e2a38",
+            secondary: "#5c6b7a"
+        }
     },
-    shape: { borderRadius: 16 }
+    shape: {
+        borderRadius: 16
+    },
+    typography: {
+        fontFamily: '"Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
+    }
 });
+
 
 const QUICK_PROMPTS = [
     {
@@ -38,7 +51,6 @@ const QUICK_PROMPTS = [
     }
 ];
 
-// Use absolute URL to avoid proxy issues; override via client/.env: VITE_API_URL=http://localhost:3001/chat
 const API = import.meta.env.VITE_API_URL || "http://localhost:3001/chat";
 
 export default function App() {
@@ -102,15 +114,14 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Container maxWidth="md" sx={{ py: 4 }}>
-                <Paper elevation={8} sx={{ overflow: "hidden", borderRadius: 4 }}>
-                    {/* Header */}
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 1.5, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <Paper elevation={6} sx={{ overflow: "hidden", borderRadius: 4, background: "linear-gradient(to top, #ffffff, #e8f0fb)" }}>
+                    <Box sx={{
+                        display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 2,
+                        borderBottom: "1px solid #e0e0e0"
+                    }}>
                         <TravelExploreIcon color="primary" />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>Travel Assistant</Typography>
-
+                        <Typography variant="h5" sx={{ fontWeight: 700 }}>AI Travel Assistant</Typography>
                     </Box>
-
-                    {/* Chat feed */}
                     <Box ref={scrollRef} sx={{ height: { xs: "60vh", md: "70vh" }, overflow: "auto", px: 2, py: 2 }}>
                         <Stack spacing={2}>
                             {messages.map((m, i) => (
@@ -124,19 +135,28 @@ export default function App() {
                             )}
                         </Stack>
                     </Box>
-
                     <Divider />
-
-                    {/* Quick prompts */}
                     <Box sx={{ px: 2, pt: 1, pb: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
                         {QUICK_PROMPTS.map((q, idx) => (
-                            <Chip key={idx} icon={q.icon} label={q.label} onClick={() => send(q.text)} clickable sx={{ bgcolor: "rgba(255,255,255,0.06)" }} />
-                        ))}
+                            <Chip
+                                key={idx}
+                                icon={q.icon}
+                                label={q.label}
+                                onClick={() => send(q.text)}
+                                clickable
+                                variant="outlined"
+                                sx={{
+                                    borderColor: "primary.main",
+                                    color: "primary.main",
+                                    fontWeight: 500,
+                                    backgroundColor: "white",
+                                    '&:hover': {
+                                        backgroundColor: "#e3f2fd"
+                                    }
+                                }}
+                            />                        ))}
                     </Box>
-
                     <Divider />
-
-                    {/* Composer */}
                     <Box sx={{ p: 2, bgcolor: "rgba(255,255,255,0.03)" }}>
                         <TextField
                             fullWidth
@@ -159,7 +179,6 @@ export default function App() {
                         />
                     </Box>
                 </Paper>
-
                 <Typography variant="caption" sx={{ display: "block", mt: 1.5, color: "text.secondary" }}>
                     Tip: Try “What should I pack for hiking in Patagonia in March for 10 days?”
                 </Typography>
