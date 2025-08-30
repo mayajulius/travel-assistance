@@ -375,7 +375,7 @@ function needMoreOrPlan(state) {
     if (state.intent === "follow_up" || state.intent === "refinement") {
         return "plan";
     }
-
+    console.log("maya");
     const required = REQUIRED_FIELDS[state.intent] || [];
     const entities = state.entities || {};
     const missing = required.find((f) => isMissingField(f, entities[f]));
