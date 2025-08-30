@@ -1,0 +1,16 @@
+{
+  "name": "travel-assistant-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env index.mjs"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.16.0",
+    "@langchain/langgraph": "^0.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "openai": "^5.16.0",
+    "zod": "^3.23.8"
+  }
+}

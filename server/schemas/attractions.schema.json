@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "city": { "type": "string" },
+    "attractions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "why_go": { "type": "string" },
+          "area": { "type": "string" },
+          "typical_duration_hours": { "type": "number" },
+          "suggested_time_of_day": { "type": "string" }
+        },
+        "required": ["name", "category", "why_go"]
+      }
+    },
+    "simple_itinerary": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["attractions"]
+}

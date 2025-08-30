@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "intent": { "type": "string", "enum": ["destination_recommendations", "packing_suggestions", "local_attractions"] },
+    "entities": {
+      "type": "object",
+      "properties": {
+        "destination": { "type": "string" },
+        "origin_city": { "type": "string" },
+        "dates": { "type": "string" },
+        "month_or_season": { "type": "string" },
+        "trip_length_days": { "type": "integer" },
+        "budget": { "type": "string" },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "companions": { "type": "string" },
+        "activities": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "missing_fields": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["intent", "entities", "missing_fields"]
+}
