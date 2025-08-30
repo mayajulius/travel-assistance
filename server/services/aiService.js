@@ -169,7 +169,11 @@ export async function handleChat(req, res) {
         }
 
         conversations.set(sessionId, conversation);
-
+        console.log(`Conversation log`);
+        conversation.forEach(entry => {
+            console.log(`[${entry.role}] ${entry.message}`);
+        });
+        console.log('—'.repeat(40));
         res.json({
             reply: reply.response,
             intent: reply.intent,
