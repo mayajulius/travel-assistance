@@ -11,7 +11,6 @@ import {
     isMissingField,
     normalizeEntities,
 } from "./helpers.mjs";
-import { heuristicRoute } from "./app.mjs";
 
 const REQUIRED_FIELDS = {
     destination_recommendations: ["month_or_season", "budget", "interests"],
@@ -95,56 +94,13 @@ const addToHistory = (state, role, content, additional = {}) => ({
     ],
 });
 
-function enhancedHeuristicRoute(userText, { conversationContext = {} } = {}) {
-    const lower = userText.toLowerCase();
-    const followUpPatterns = [
-        /\b(more|what about|any other|also|additionally|instead|rather|change|better|compare|versus|vs|prefer|that|those|it|them)\b/i,
-    ];
-
-    const isFollowUp = followUpPatterns.some((p) => p.test(userText));
-    if (isFollowUp && Object.keys(conversationContext).length) {
-        return { intent: "follow_up", entities: conversationContext, conversationContinuation: true };
-    }
-
-    const entities = {};
-    let intent = "destination_recommendations";
-
-    if (/\b(pack|luggage|clothing|gear)\b/.test(lower)) intent = "packing_suggestions";
-    else if (/\b(visit|attractions|things|restaurants?|museums?|sights?)\b.*\bin\b/.test(lower)) intent = "local_attractions";
-
-    entities.destination = inferDestinationFromText(userText);
-    const days = userText.match(/\b(\d{1,3})\s*(?:day|days|d)\b/i);
-    if (days) entities.trip_length_days = Number(days[1]);
-
-    const monthMatch = userText.match(/\b(january|february|...|december)\b/i);
-    const seasonMatch = userText.match(/\b(spring|summer|fall|autumn|winter)\b/i);
-    if (monthMatch) entities.month_or_season = capitalize(monthMatch[1]);
-    if (seasonMatch) entities.month_or_season = capitalize(seasonMatch[1]);
-
-    const budgetMatch = userText.match(/\b(low|mid|medium|high|luxury|cheap|budget|expensive)\b/i);
-    if (budgetMatch) {
-        const b = budgetMatch[1].toLowerCase();
-        entities.budget = ["low", "budget", "cheap"].includes(b)
-            ? "low"
-            : ["mid", "medium"].includes(b)
-                ? "medium"
-                : "high";
-    }
-
-    const interests = ["hiking", "museums", "food", "beach", "culture", "history", "nightlife", "shopping", "nature", "adventure", "art", "architecture"];
-    const matchedInterests = interests.filter((w) => new RegExp(`\\b${w}\\b`, "i").test(userText));
-    if (matchedInterests.length) entities.interests = matchedInterests;
-
-    return { intent, entities: { ...conversationContext, ...entities }, conversationContinuation: false };
-}
-
 async function routeNode(state) {
     const updatedState = addToHistory(state, "user", state.userMessage, {
         entities: state.entities,
         intent: state.intent,
     });
 
-    const routed = enhancedHeuristicRoute(state.userMessage, updatedState);
+    const routed = await routeQuery(state.userMessage, state.userProfile, state.conversationContext);
 
     if (["follow_up", "refinement"].includes(routed.intent)) {
         return await handleFollowUp(updatedState, routed);

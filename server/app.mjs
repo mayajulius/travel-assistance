@@ -176,9 +176,26 @@ function parseAnswer(field, answer) {
 }
 
 // ---------- Router ----------
-export async function routeQuery(userText, userProfile = {}) {
-    const userPayload = `(User profile): ${JSON.stringify(userProfile)}\n(User message): ${userText}`;
 
+export async function routeQuery(userText, userProfile = {}, conversationContext = {}) {
+    const lower = userText.toLowerCase();
+    const followUpPatterns = [
+        /\b(more|what about|any other|also|additionally|instead|rather|change|better|compare|versus|vs|prefer|that|those|it|them)\b/i,
+    ];
+
+    const isFollowUp = followUpPatterns.some((p) => p.test(lower));
+    const hasContext = Object.keys(conversationContext).length > 0;
+
+    if (isFollowUp && hasContext) {
+        return {
+            intent: "follow_up",
+            entities: conversationContext,
+            conversationContinuation: true
+        };
+    }
+
+    // Attempt LLM classification
+    const userPayload = `(User profile): ${JSON.stringify(userProfile)}\n(Conversation context): ${JSON.stringify(conversationContext)}\n(User message): ${userText}`;
 
     try {
         const raw = await ollamaChatMarkdown({
@@ -186,12 +203,33 @@ export async function routeQuery(userText, userProfile = {}) {
             user: userPayload,
             model: process.env.ROUTER_MODEL || "gemma3:8b",
         });
-        return heuristicRoute(userText); // Don't parse JSON anymore
+
+        const parsed = JSON.parse(raw.trim());
+
+        // Merge memory
+        return {
+            ...parsed,
+            entities: {
+                ...conversationContext,
+                ...parsed.entities
+            },
+            conversationContinuation: false
+        };
     } catch (err) {
-        console.error("[router] ollama error:", err.message);
-        return heuristicRoute(userText);
+        console.warn("[routeQuery] LLM failed, using fallback:", err.message);
+
+        const fallback = heuristicRoute(userText);
+        return {
+            ...fallback,
+            entities: {
+                ...conversationContext,
+                ...fallback.entities
+            },
+            conversationContinuation: false
+        };
     }
 }
+
 // ---------- Planner ----------
 export async function runPlanner(intent, entities, userProfile = {}) {
     const ctx = { ...userProfile, ...entities };
