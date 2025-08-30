@@ -107,7 +107,7 @@ function heuristicRoute(userText = "") {
     return { intent, entities, missing_fields: [] };
 }
 
-function extractDestination(text = "") {
+export function extractDestination(text = "") {
     const STOP = new Set(["november","december","january","february","march","april","may","june","july","august","september","october",
         "winter","spring","summer","fall","autumn","weekend","trip","vacation","holiday","days","weeks"]);
     const m = text.match(/\b(?:to|in|for)\s+([A-Z][\w''.-]+(?:\s+[A-Z][\w''.-]+){0,3})\b/);
