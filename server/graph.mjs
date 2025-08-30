@@ -1,13 +1,17 @@
-// memory-graph.mjs - Cleaned and simplified with memory support
+// memory-graph.mjs - Cleaned, fluent, and memory-enhanced
 import { StateGraph } from "@langchain/langgraph";
 import { z } from "zod";
 import {
     routeQuery,
     runPlanner,
     inferDestinationFromText,
-    FIELD_QUESTIONS, extractDestination,
+    FIELD_QUESTIONS,
 } from "./app.mjs";
-import { isMissingField, normalizeEntities } from "./helpers.mjs";
+import {
+    isMissingField,
+    normalizeEntities,
+} from "./helpers.mjs";
+import { heuristicRoute } from "./app.mjs";
 
 const REQUIRED_FIELDS = {
     destination_recommendations: ["month_or_season", "budget", "interests"],
@@ -108,7 +112,7 @@ function enhancedHeuristicRoute(userText, { conversationContext = {} } = {}) {
     if (/\b(pack|luggage|clothing|gear)\b/.test(lower)) intent = "packing_suggestions";
     else if (/\b(visit|attractions|things|restaurants?|museums?|sights?)\b.*\bin\b/.test(lower)) intent = "local_attractions";
 
-    entities.destination = extractDestination(userText) || inferDestinationFromText(userText);
+    entities.destination = inferDestinationFromText(userText);
     const days = userText.match(/\b(\d{1,3})\s*(?:day|days|d)\b/i);
     if (days) entities.trip_length_days = Number(days[1]);
 
@@ -172,7 +176,7 @@ async function routeNode(state) {
 async function handleFollowUp(state, routed) {
     const lastPlan = state.previousPlans[state.previousPlans.length - 1];
     if (!lastPlan) {
-        return validateState({ ...state, reply: "I need more context to help. Can you clarify?", done: true });
+        return validateState({ ...state, reply: "I'm not sure what you're referring to. Can you clarify?", done: true });
     }
 
     if (routed.intent === "refinement") {
@@ -182,7 +186,7 @@ async function handleFollowUp(state, routed) {
 
     return validateState({
         ...state,
-        reply: `Based on your previous request about ${lastPlan.entities.destination || "your trip"}, what would you like to know more about?`,
+        reply: `Sure! What more would you like to know about your trip to ${lastPlan.entities.destination || "the destination"}?`,
         done: true,
     });
 }

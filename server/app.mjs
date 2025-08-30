@@ -10,22 +10,30 @@ const [destinationsPrompt, packingPrompt, attractionsPrompt] = await Promise.all
 ]);
 
 // ---------- Router prompt ----------
-const ROUTER_PROMPT = `You are a strict travel router. Classify the user's message into EXACTLY ONE of:
-- "destination_recommendations"
-- "packing_suggestions"  
-- "local_attractions"
+const ROUTER_PROMPT = `You are a thoughtful and careful travel intent router. Follow these steps:
 
-Then extract entities: destination (string), trip_length_days (number), month_or_season (string), budget (string), interests (string[]).
+1. Analyze the user's message and think step-by-step.
+2. Classify the intent into EXACTLY ONE of:
+   - "destination_recommendations"
+   - "packing_suggestions"  
+   - "local_attractions"
+3. Extract the relevant entities:
+   - destination (string or null)
+   - trip_length_days (number or null)
+   - month_or_season (string or null)
+   - budget (\"low\", \"medium\", \"high\" or null)
+   - interests (array of strings or null)
+4. At the end, output ONLY the final JSON block as specified below.
 
-CRITICAL RULES:
-1. Return ONLY valid JSON - no explanations, no markdown, no extra text
-2. Start response with { and end with }
-3. All keys must be quoted
-4. All string values must be quoted
-5. Numbers should not be quoted
-6. Arrays must use proper JSON syntax
+Important:
+- Your reasoning can include bullet points or short paragraphs.
+- Do NOT include reasoning in the JSON block.
+- JSON block MUST be valid: no markdown, no commentary, no trailing commas.
+- JSON block must start with "{" and end with "}".
 
-JSON structure:
+---
+
+JSON response format:
 {
   "intent": "one_of_the_three_options",
   "entities": {
@@ -37,18 +45,34 @@ JSON structure:
   }
 }
 
-DISAMBIGUATION RULES:
-1) "what should I do/see in <place>" OR "I want to go/visit/travel to <place>" → "local_attractions"
-2) "where should I go" / "recommend places" without specific destination → "destination_recommendations"  
-3) "packing, luggage, what to bring, clothing" → "packing_suggestions"
-4) Specific destination mentioned but unclear intent → prefer "local_attractions"
+---
+
+DISAMBIGUATION RULES (think about these carefully during step 1):
+- “what should I do/see in <place>” or “I want to go/visit/travel to <place>” → "local_attractions"
+- “where should I go” / “recommend places” (without a specific destination) → "destination_recommendations"
+- “packing”, “luggage”, “what to bring”, “clothing” → "packing_suggestions"
+- If a destination is mentioned but the intent is unclear → prefer "local_attractions"
+
+---
 
 Examples:
+
 Input: "i want to go to canada"
-Output: {"intent":"local_attractions","entities":{"destination":"Canada"}}
+Reasoning:
+- Mentions a destination ("Canada")
+- Intent is vague, but matches “I want to go to…” → local attractions
+JSON:
+{"intent":"local_attractions","entities":{"destination":"Canada","trip_length_days":null,"month_or_season":null,"budget":null,"interests":null}}
+
+---
 
 Input: "What to pack for 5 days in Iceland in November?"
-Output: {"intent":"packing_suggestions","entities":{"destination":"Iceland","trip_length_days":5,"month_or_season":"November"}}`
+Reasoning:
+- Packing-related
+- Extracts destination, trip length, and season
+JSON:
+{"intent":"packing_suggestions","entities":{"destination":"Iceland","trip_length_days":5,"month_or_season":"November","budget":null,"interests":null}}
+`;
 
 // ---------- Enhanced heuristic routing (fallback) ----------
 function heuristicRoute(userText = "") {
@@ -197,5 +221,6 @@ export async function runPlanner(intent, entities, userProfile = {}) {
 export {
     inferDestinationFromText,
     FIELD_QUESTIONS,
-    parseAnswer
+    parseAnswer,
+    heuristicRoute
 };
