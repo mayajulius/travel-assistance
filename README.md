@@ -1,5 +1,6 @@
 Prompt Engineering Notes:
 
+Local LLM with Ollama: All responses are generated using a locally running Ollama LLM (llama3.2), which avoids API latency and cost.
 Intent Detection: I used simple keyword and regex checks to route messages into 4 types: weather, packing, destinations, and attractions.
 Custom Prompts per Intent: Each intent has a tailored prompt with specific instructions to give relevant and helpful answers.
 Weather Integration: When the message mentions weather + location, I add real-time weather data to the prompt to improve advice.
